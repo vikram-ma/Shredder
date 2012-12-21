@@ -28,3 +28,12 @@ LIBS += -LC:\\opencv\\release\\install\\bin \
     -lopencv_features2d240 \
     -lopencv_calib3d240 \
     -lopencv_objdetect240 \
+
+OTHER_FILES += \
+    haarcascade_frontalface_alt.xml
+
+
+target.path += $${OUT_PWD}
+target.files = haarcascade_frontalface_alt.xml
+
+INSTALLS += target

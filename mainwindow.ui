@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1255</width>
+    <width>1027</width>
     <height>768</height>
    </rect>
   </property>
@@ -63,107 +63,13 @@
      <number>0</number>
     </property>
    </widget>
-   <widget class="QGroupBox" name="groupBox">
-    <property name="geometry">
-     <rect>
-      <x>1020</x>
-      <y>20</y>
-      <width>191</width>
-      <height>221</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>Channels</string>
-    </property>
-    <widget class="QWidget" name="verticalLayoutWidget">
-     <property name="geometry">
-      <rect>
-       <x>9</x>
-       <y>19</y>
-       <width>171</width>
-       <height>181</height>
-      </rect>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Red</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSlider" name="redSlider">
-        <property name="maximum">
-         <number>255</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_2">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Green</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSlider" name="greenSlider">
-        <property name="maximum">
-         <number>255</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_3">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Blue</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSlider" name="blueSlider">
-        <property name="maximum">
-         <number>255</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1255</width>
+     <width>1027</width>
      <height>26</height>
     </rect>
    </property>
@@ -178,9 +84,19 @@
     <property name="title">
      <string>Filter</string>
     </property>
+    <widget class="QMenu" name="menu_Channels">
+     <property name="title">
+      <string>&amp;Channels</string>
+     </property>
+     <addaction name="actionRed"/>
+     <addaction name="actionGreen"/>
+     <addaction name="actionBlue"/>
+    </widget>
     <addaction name="actionInvert"/>
     <addaction name="actionGrayscale"/>
     <addaction name="actionEdge_Detect"/>
+    <addaction name="actionFace_Detect"/>
+    <addaction name="menu_Channels"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -259,6 +175,26 @@
   <action name="actionEdge_Detect">
    <property name="text">
     <string>&amp;Edge Detect</string>
+   </property>
+  </action>
+  <action name="actionRed">
+   <property name="text">
+    <string>&amp;Red</string>
+   </property>
+  </action>
+  <action name="actionGreen">
+   <property name="text">
+    <string>&amp;Green</string>
+   </property>
+  </action>
+  <action name="actionBlue">
+   <property name="text">
+    <string>&amp;Blue</string>
+   </property>
+  </action>
+  <action name="actionFace_Detect">
+   <property name="text">
+    <string>Face Detection</string>
    </property>
   </action>
  </widget>

@@ -12,11 +12,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionInvert, SIGNAL(triggered()), this, SLOT(InvertImage()));
     connect(ui->actionGrayscale, SIGNAL(triggered()), this, SLOT(GrayScaleImage()));
     connect(ui->actionEdge_Detect, SIGNAL(triggered()), this, SLOT(EdgeDetect()));
-    connect(ui->blueSlider, SIGNAL(actionTriggered(int)), this, SLOT(IncreaseBlue(int)));
-    connect(ui->greenSlider, SIGNAL(actionTriggered(int)), this, SLOT(IncreaseGreen(int)));
-    connect(ui->redSlider, SIGNAL(actionTriggered(int)), this, SLOT(IncreaseRed(int)));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(About()));
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+    connect(ui->actionRed, SIGNAL(triggered()), this, SLOT(IncreaseRed()));
+    connect(ui->actionBlue, SIGNAL(triggered()), this, SLOT(IncreaseBlue()));
+    connect(ui->actionGreen, SIGNAL(triggered()), this, SLOT(IncreaseGreen()));
 }
 
 MainWindow::~MainWindow()
@@ -60,22 +60,40 @@ void MainWindow::InvertImage()
     ShowImage(image);
 }
 
-void MainWindow::IncreaseRed(int value)
+void MainWindow::IncreaseRed()
 {
-    IncreaseChannelValue(2, value);
-    ShowImage(image);
+    int value;
+    bool ok;
+    value = QInputDialog::getInt(this,tr("Enter Threshold"), tr("Theshold: "), 50, 0, 255, 1, &ok);
+    if(ok)
+    {
+        IncreaseChannelValue(2, value);
+        ShowImage(image);
+    }
 }
 
-void MainWindow::IncreaseBlue(int value)
+void MainWindow::IncreaseBlue()
 {
-    IncreaseChannelValue(0, value);
-    ShowImage(image);
+    int value;
+    bool ok;
+    value = QInputDialog::getInt(this,tr("Enter Threshold"), tr("Theshold: "), 50, 0, 255, 1, &ok);
+    if(ok)
+    {
+        IncreaseChannelValue(0, value);
+        ShowImage(image);
+    }
 }
 
-void MainWindow::IncreaseGreen(int value)
+void MainWindow::IncreaseGreen()
 {
-    IncreaseChannelValue(1, value);
-    ShowImage(image);
+    int value;
+    bool ok;
+    value = QInputDialog::getInt(this,tr("Enter Threshold"), tr("Theshold: "), 50, 0, 255, 1, &ok);
+    if(ok)
+    {
+        IncreaseChannelValue(1, value);
+        ShowImage(image);
+    }
 }
 
 void MainWindow::IncreaseChannelValue(int channel, int value)
@@ -125,7 +143,7 @@ void MainWindow::EdgeDetect()
 
 void MainWindow::About()
 {
-    QMessageBox::about(this, tr("About Shredder"), tr("User OpenCV 2.4 and Qt 4.8.2"));
+    QMessageBox::about(this, tr("About Shredder"), tr("Uses OpenCV 2.4 and Qt 4.8.2"));
 }
 
 void MainWindow::ShowImage(const cv::Mat& matImage)

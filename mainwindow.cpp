@@ -27,7 +27,7 @@ MainWindow::~MainWindow()
 void MainWindow::OpenImage()
 {
     QString fileName;
-    fileName = QFileDialog::getOpenFileName(this,tr("Select Image"),"C:\\Users\\SESA201948\\Pictures",tr("Image Files(*.png *.jpg)"));
+    fileName = QFileDialog::getOpenFileName(this,tr("Select Image"),"C:",tr("Image Files(*.png *.jpg)"));
     std::string filePath = fileName.toLocal8Bit().data();
     image = cv::imread(filePath);
     ShowImage(image);
@@ -37,7 +37,7 @@ void MainWindow::SaveImage()
 {
     std::vector<int> compression_params;
     compression_params.push_back(CV_IMWRITE_JPEG_QUALITY);
-    QString filePath = QFileDialog::getSaveFileName(this, tr("Save Imag"),"C:\\Users\\SESA201948\\Pictures", tr("Image Files(*.jpg)"));
+    QString filePath = QFileDialog::getSaveFileName(this, tr("Save Imag"),"C:", tr("Image Files(*.jpg)"));
     if(!filePath.isEmpty() && !filePath.isNull())
     {
         cv::imwrite(filePath.toLocal8Bit().data(),image,compression_params);
@@ -117,7 +117,7 @@ void MainWindow::EdgeDetect()
         {
             cvtColor(image, image, CV_BGR2GRAY);
         }
-        //blur(image, image, cv::Size(3,3));
+        blur(image, image, cv::Size(3,3));
         Canny(image, image, 0, lowThreshold*3, 3);
         ShowImage(image);
     }

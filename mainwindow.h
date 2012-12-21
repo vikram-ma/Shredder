@@ -11,6 +11,8 @@
 #include <QInputDialog>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/objdetect/objdetect.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 
 namespace Ui {
@@ -37,10 +39,11 @@ public slots:
     void SaveImage();
     void InvertImage();
     void GrayScaleImage();
-    void IncreaseRed(int value);
-    void IncreaseBlue(int value);
-    void IncreaseGreen(int value);
+    void IncreaseRed();
+    void IncreaseBlue();
+    void IncreaseGreen();
     void EdgeDetect();
+    void FaceDetect();
     void About();
 };
 

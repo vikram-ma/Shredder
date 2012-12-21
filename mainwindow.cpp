@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionRed, SIGNAL(triggered()), this, SLOT(IncreaseRed()));
     connect(ui->actionBlue, SIGNAL(triggered()), this, SLOT(IncreaseBlue()));
     connect(ui->actionGreen, SIGNAL(triggered()), this, SLOT(IncreaseGreen()));
+    connect(ui->actionFace_Detect, SIGNAL(triggered()), this, SLOT(FaceDetect()));
 }
 
 MainWindow::~MainWindow()
@@ -139,6 +140,40 @@ void MainWindow::EdgeDetect()
         Canny(image, image, 0, lowThreshold*3, 3);
         ShowImage(image);
     }
+}
+
+void MainWindow::FaceDetect()
+{
+    //Face detection!
+    cv::Mat gray_image;
+    if(image.channels()!=1)
+    {
+        cvtColor(image, gray_image, CV_BGR2GRAY);
+    }
+    else
+    {
+        cvCopy(image.data, gray_image.data);
+    }
+    equalizeHist(gray_image, gray_image);
+
+    //-- Detect face
+    std::vector<cv::Rect> faces;
+    cv::CascadeClassifier face_cascade;
+    std::string face_cascade_name = "haarcascade_frontalface_alt.xml";
+    if(!face_cascade.load(face_cascade_name))
+    {
+        QMessageBox::warning(this, tr("Facial"), tr("failed to load .xml file"));
+        return;
+    }
+
+    face_cascade.detectMultiScale(gray_image, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, cv::Size(30,30));
+
+    for(int i = 0; i < faces.size(); i++)
+    {
+        cv::Point center(faces[i].x + faces[i].width * 0.5, faces[i].y + faces[i].height * 0.5);
+        ellipse(image, center, cv::Size(faces[i].width * 0.5, faces[i].height * 0.5), 0, 0, 360, cv::Scalar( 255, 0, 255), 4, 8, 0);
+    }
+    ShowImage(image);
 }
 
 void MainWindow::About()

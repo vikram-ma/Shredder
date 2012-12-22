@@ -1,6 +1,7 @@
 #-------------------------------------------------
 #
 # Project created by QtCreator 2012-12-20T15:17:40
+# Author Vikram
 #
 #-------------------------------------------------
 
@@ -34,6 +35,7 @@ OTHER_FILES += \
 
 
 target.path += $${OUT_PWD}
-target.files = haarcascade_frontalface_alt.xml
+target.files += haarcascade_frontalface_alt.xml\
+    haarcascade_eye_tree_eyeglasses.xml
 
 INSTALLS += target

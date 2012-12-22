@@ -6,6 +6,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    statusLabel = new QLabel();
+    ui->statusBar->addWidget(statusLabel);
 
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(OpenImage()));
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(SaveImage()));
@@ -147,6 +149,7 @@ void MainWindow::EdgeDetect()
 
 void MainWindow::FaceDetect()
 {
+    statusLabel->setText("I have started searching, Just curious to know whom you are searching for? ");
     //-- Face detection!
     cv::Mat gray_image;
     if(image.channels()!=1)
@@ -155,8 +158,9 @@ void MainWindow::FaceDetect()
     }
     else
     {
-        cvCopy(image.data, gray_image.data);
+        image.copyTo(gray_image);
     }
+
     equalizeHist(gray_image, gray_image);
 
     //-- Detect face
@@ -179,10 +183,12 @@ void MainWindow::FaceDetect()
     }
 
     ShowImage(image);
+    statusLabel->setText("I am done searching! Did you find the one you were looking for? ");
 }
 
 void MainWindow::EyeDetect()
 {
+    statusLabel->setText("Searching!, and thinking :). Look here for more updates. ");
     //-- Face detection!
     cv::Mat gray_image;
     if(image.channels()!=1)
@@ -191,8 +197,9 @@ void MainWindow::EyeDetect()
     }
     else
     {
-        cvCopy(image.data, gray_image.data);
+        image.copyTo(gray_image);
     }
+
     equalizeHist(gray_image, gray_image);
 
     //-- Detect face
@@ -235,10 +242,13 @@ void MainWindow::EyeDetect()
     }
 
     ShowImage(image);
+    statusLabel->setText("I am done! ");
 }
 
 void MainWindow::RedEyeRemoval()
 {
+    statusLabel->setText("Ever wondered what causes Red eye effect? One has to understand problem before fixing it!");
+
     //-- Face detection!
     cv::Mat gray_image;
     if(image.channels()!=1)
@@ -247,8 +257,9 @@ void MainWindow::RedEyeRemoval()
     }
     else
     {
-        cvCopy(image.data, gray_image.data);
+        image.copyTo(gray_image);
     }
+
     equalizeHist(gray_image, gray_image);
 
     //-- Detect face
@@ -281,14 +292,12 @@ void MainWindow::RedEyeRemoval()
         eyes_cascade.detectMultiScale(faceROI, eyes, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, cv::Size(30, 30));
         for(int j=0; j < eyes.size(); j++)
         {
-            //cv::Point center(faces[i].x + eyes[j].x + eyes[j].width * 0.5, faces[i].y + eyes[j].y + eyes[j].height * 0.5);
-            //int radius = cvRound( (eyes[j].width + eyes[j].height) * 0.5);
-            //circle(image, center, radius, cv::Scalar(255,0,0), 4, 8, 0);
-            //-- Pick the color from neighbouring pixel and fill remove the red eye.
+            //-- Pick the color from neighbouring pixel and fill to remove red eye.
         }
     }
 
     ShowImage(image);
+    statusLabel->setText("But I didn't have to understand what caused it to fix it :P ");
 }
 
 void MainWindow::About()

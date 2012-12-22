@@ -30,6 +30,7 @@ public:
 private:
     Ui::MainWindow *ui;
     cv::Mat image;
+    QLabel *statusLabel;
     void Redraw(const QImage &_qimage);
     void ShowImage(const cv::Mat& matImage);
     void IncreaseChannelValue(int channel, int value);

@@ -96,6 +96,8 @@
     <addaction name="actionGrayscale"/>
     <addaction name="actionEdge_Detect"/>
     <addaction name="actionFace_Detect"/>
+    <addaction name="actionEye_Detect"/>
+    <addaction name="actionRed_Eye_Removal"/>
     <addaction name="menu_Channels"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -118,7 +120,7 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <addaction name="separator"/>
   </widget>
@@ -195,6 +197,16 @@
   <action name="actionFace_Detect">
    <property name="text">
     <string>Face Detection</string>
+   </property>
+  </action>
+  <action name="actionEye_Detect">
+   <property name="text">
+    <string>&amp;Eye Detection</string>
+   </property>
+  </action>
+  <action name="actionRed_Eye_Removal">
+   <property name="text">
+    <string>&amp;Red Eye Removal</string>
    </property>
   </action>
  </widget>

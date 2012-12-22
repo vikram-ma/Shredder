@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionBlue, SIGNAL(triggered()), this, SLOT(IncreaseBlue()));
     connect(ui->actionGreen, SIGNAL(triggered()), this, SLOT(IncreaseGreen()));
     connect(ui->actionFace_Detect, SIGNAL(triggered()), this, SLOT(FaceDetect()));
+    connect(ui->actionEye_Detect, SIGNAL(triggered()), this, SLOT(EyeDetect()));
+    connect(ui->actionRed_Eye_Removal, SIGNAL(triggered()), this, SLOT(RedEyeRemoval()));
 }
 
 MainWindow::~MainWindow()
@@ -136,6 +138,7 @@ void MainWindow::EdgeDetect()
         {
             cvtColor(image, image, CV_BGR2GRAY);
         }
+
         blur(image, image, cv::Size(3,3));
         Canny(image, image, 0, lowThreshold*3, 3);
         ShowImage(image);
@@ -144,7 +147,7 @@ void MainWindow::EdgeDetect()
 
 void MainWindow::FaceDetect()
 {
-    //Face detection!
+    //-- Face detection!
     cv::Mat gray_image;
     if(image.channels()!=1)
     {
@@ -168,17 +171,132 @@ void MainWindow::FaceDetect()
 
     face_cascade.detectMultiScale(gray_image, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, cv::Size(30,30));
 
+    //-- Draw ellipse around all the faces deteceted.
     for(int i = 0; i < faces.size(); i++)
     {
         cv::Point center(faces[i].x + faces[i].width * 0.5, faces[i].y + faces[i].height * 0.5);
         ellipse(image, center, cv::Size(faces[i].width * 0.5, faces[i].height * 0.5), 0, 0, 360, cv::Scalar( 255, 0, 255), 4, 8, 0);
     }
+
+    ShowImage(image);
+}
+
+void MainWindow::EyeDetect()
+{
+    //-- Face detection!
+    cv::Mat gray_image;
+    if(image.channels()!=1)
+    {
+        cvtColor(image, gray_image, CV_BGR2GRAY);
+    }
+    else
+    {
+        cvCopy(image.data, gray_image.data);
+    }
+    equalizeHist(gray_image, gray_image);
+
+    //-- Detect face
+    std::vector<cv::Rect> faces;
+    cv::CascadeClassifier face_cascade;
+    std::string face_cascade_name = "haarcascade_frontalface_alt.xml";
+    if(!face_cascade.load(face_cascade_name))
+    {
+        QMessageBox::warning(this, tr("Face detection"), tr("failed to load .xml file. "));
+        return;
+    }
+
+    cv::CascadeClassifier eyes_cascade;
+    std::string eye_cascade_name = "haarcascade_eye_tree_eyeglasses.xml";
+    if(!eyes_cascade.load(eye_cascade_name))
+    {
+        QMessageBox::warning(this, tr("Eye detection"), tr("Failed to data file. "));
+        return;
+    }
+
+    face_cascade.detectMultiScale(gray_image, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, cv::Size(30,30));
+
+    //-- Draw ellipse around all the faces deteceted.
+    for(int i = 0; i < faces.size(); i++)
+    {
+        //cv::Point center(faces[i].x + faces[i].width * 0.5, faces[i].y + faces[i].height * 0.5);
+        //ellipse(image, center, cv::Size(faces[i].width * 0.5, faces[i].height * 0.5), 0, 0, 360, cv::Scalar( 255, 0, 255), 4, 8, 0);
+
+        cv::Mat faceROI = gray_image(faces[i]);
+        std::vector<cv::Rect> eyes;
+
+        //-- In each face detect eyes.
+        eyes_cascade.detectMultiScale(faceROI, eyes, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, cv::Size(30, 30));
+        for(int j=0; j < eyes.size(); j++)
+        {
+            cv::Point center(faces[i].x + eyes[j].x + eyes[j].width * 0.5, faces[i].y + eyes[j].y + eyes[j].height * 0.5);
+            int radius = cvRound( (eyes[j].width + eyes[j].height) * 0.5);
+            circle(image, center, radius, cv::Scalar(255,0,0), 4, 8, 0);
+        }
+    }
+
+    ShowImage(image);
+}
+
+void MainWindow::RedEyeRemoval()
+{
+    //-- Face detection!
+    cv::Mat gray_image;
+    if(image.channels()!=1)
+    {
+        cvtColor(image, gray_image, CV_BGR2GRAY);
+    }
+    else
+    {
+        cvCopy(image.data, gray_image.data);
+    }
+    equalizeHist(gray_image, gray_image);
+
+    //-- Detect face
+    std::vector<cv::Rect> faces;
+    cv::CascadeClassifier face_cascade;
+    std::string face_cascade_name = "haarcascade_frontalface_alt.xml";
+    if(!face_cascade.load(face_cascade_name))
+    {
+        QMessageBox::warning(this, tr("Face detection"), tr("failed to load .xml file. "));
+        return;
+    }
+
+    cv::CascadeClassifier eyes_cascade;
+    std::string eye_cascade_name = "haarcascade_eye_tree_eyeglasses.xml";
+    if(!eyes_cascade.load(eye_cascade_name))
+    {
+        QMessageBox::warning(this, tr("Eye detection"), tr("Failed to data file. "));
+        return;
+    }
+
+    face_cascade.detectMultiScale(gray_image, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, cv::Size(30,30));
+
+    //-- Draw ellipse around all the faces deteceted.
+    for(int i = 0; i < faces.size(); i++)
+    {
+        cv::Mat faceROI = gray_image(faces[i]);
+        std::vector<cv::Rect> eyes;
+
+        //-- In each face detect eyes.
+        eyes_cascade.detectMultiScale(faceROI, eyes, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, cv::Size(30, 30));
+        for(int j=0; j < eyes.size(); j++)
+        {
+            //cv::Point center(faces[i].x + eyes[j].x + eyes[j].width * 0.5, faces[i].y + eyes[j].y + eyes[j].height * 0.5);
+            //int radius = cvRound( (eyes[j].width + eyes[j].height) * 0.5);
+            //circle(image, center, radius, cv::Scalar(255,0,0), 4, 8, 0);
+            //-- Pick the color from neighbouring pixel and fill remove the red eye.
+        }
+    }
+
     ShowImage(image);
 }
 
 void MainWindow::About()
 {
-    QMessageBox::about(this, tr("About Shredder"), tr("Uses OpenCV 2.4 and Qt 4.8.2"));
+    QMessageBox::about(this, tr("About Shredder"), tr("<p>The <b>Shredder</b> uses OpenCV 2.4 and Qt 4.8.2 "
+                                                      "<br/>List of features avialable include "
+                                                      "Inverting Image, Edge detection, Change RGB values, "
+                                                      "Face detection<p>"));
 }
 
 void MainWindow::ShowImage(const cv::Mat& matImage)
@@ -199,7 +317,7 @@ void MainWindow::ShowImage(const cv::Mat& matImage)
     Redraw(_qimage);
 }
 
-void MainWindow::Redraw(QImage _qimage)
+void MainWindow::Redraw(const QImage& _qimage)
 {
     ui->imageLabel->setPixmap(QPixmap::fromImage(_qimage));
 }

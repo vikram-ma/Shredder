@@ -30,7 +30,7 @@ public:
 private:
     Ui::MainWindow *ui;
     cv::Mat image;
-    void Redraw(QImage _qimage);
+    void Redraw(const QImage &_qimage);
     void ShowImage(const cv::Mat& matImage);
     void IncreaseChannelValue(int channel, int value);
 
@@ -44,6 +44,8 @@ public slots:
     void IncreaseGreen();
     void EdgeDetect();
     void FaceDetect();
+    void EyeDetect();
+    void RedEyeRemoval();
     void About();
 };
 

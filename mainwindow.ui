@@ -24,43 +24,31 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>20</y>
-      <width>999</width>
-      <height>679</height>
+      <y>10</y>
+      <width>991</width>
+      <height>671</height>
      </rect>
     </property>
     <property name="sizePolicy">
-     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
       <horstretch>0</horstretch>
       <verstretch>0</verstretch>
      </sizepolicy>
     </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
+    <property name="sizeIncrement">
+     <size>
+      <width>1</width>
+      <height>1</height>
+     </size>
     </property>
     <property name="styleSheet">
      <string notr="true">QLabel {background-color : white; }</string>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::WinPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Plain</enum>
-    </property>
-    <property name="lineWidth">
-     <number>5</number>
-    </property>
-    <property name="text">
-     <string/>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
-    </property>
-    <property name="margin">
-     <number>0</number>
     </property>
    </widget>
   </widget>

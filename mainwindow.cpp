@@ -237,7 +237,14 @@ void MainWindow::EyeDetect()
         {
             cv::Point center(faces[i].x + eyes[j].x + eyes[j].width * 0.5, faces[i].y + eyes[j].y + eyes[j].height * 0.5);
             int radius = cvRound( (eyes[j].width + eyes[j].height) * 0.5);
-            circle(image, center, radius, cv::Scalar(255,0,0), 4, 8, 0);
+            //circle(image, center, radius, cv::Scalar(255,0,0), 4, 8, 0);
+            cv::Point pt1;
+            pt1.x = faces[i].x + eyes[j].x;
+            pt1.y = faces[i].y + eyes[j].y;
+            cv::Point pt2;
+            pt2.x = faces[i].x + eyes[j].x + eyes[j].width;
+            pt2.y = faces[i].y + eyes[j].y + eyes[j].height;
+            rectangle(image, pt1, pt2, cv::Scalar(255,0,0));
         }
     }
 
@@ -282,7 +289,7 @@ void MainWindow::RedEyeRemoval()
 
     face_cascade.detectMultiScale(gray_image, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, cv::Size(30,30));
 
-    //-- Draw ellipse around all the faces deteceted.
+    //-- Search for the eyes in faces detected.
     for(int i = 0; i < faces.size(); i++)
     {
         cv::Mat faceROI = gray_image(faces[i]);
@@ -293,6 +300,43 @@ void MainWindow::RedEyeRemoval()
         for(int j=0; j < eyes.size(); j++)
         {
             //-- Pick the color from neighbouring pixel and fill to remove red eye.
+            //-- Search for red pixels and make them black.
+            //-- For now lets define red as R 150 to 200 then G,B 100 or below
+            //-- if more than 200 then don't care about other pixel values.
+            if(image.channels() == 1)
+            {
+                QMessageBox::warning(this, tr("Can't remove red eye"), tr("Can't remove the red eye from single channel image"));
+                return;
+            }
+
+            cv::Rect eyeRect;
+            eyeRect.height = eyes[j].height;
+            eyeRect.width = eyes[j].width;
+            eyeRect.x = eyes[j].x + faces[i].x;
+            eyeRect.y = eyes[j].y + faces[i].y;
+            cv::Mat eyeRoI = image(eyeRect);
+            //-- In this matrix search for red pixels.
+            int channels = eyeRoI.channels();
+            int r = 2; // data is stored as BGR, so 2 for red.
+            int b = 0, g = 1;
+            uchar* data = eyeRoI.data;
+            int step = eyeRoI.step;
+            for(int i=0; i < eyeRoI.rows; i++)
+            {
+                for(int j=0; j < eyeRoI.cols; j++)
+                {
+                    //data[i*step+j*channels+r] = value;
+                    if(data[i*step+j*channels+r] < 100) //||
+                            //(data[i*step+j*channels+r] > 150 && data[i*step+j*channels+g] < 100 && data[i*step+j*channels+b] < 100))
+                    {
+                        // blacken this pixel.
+                        data[i*step+j*channels+r] = 0;
+                        data[i*step+j*channels+g] = 0;
+                        data[i*step+j*channels+b] = 0;
+                    }
+
+                }
+            }
         }
     }
 

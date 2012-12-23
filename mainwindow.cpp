@@ -254,6 +254,12 @@ void MainWindow::EyeDetect()
 
 void MainWindow::RedEyeRemoval()
 {
+    if(image.channels() == 1)
+    {
+        QMessageBox::warning(this, tr("Can't remove red eye"), tr("Can't remove the red eye from single channel image"));
+        return;
+    }
+
     statusLabel->setText("Ever wondered what causes Red eye effect? One has to understand problem before fixing it!");
 
     //-- Face detection!
@@ -280,7 +286,8 @@ void MainWindow::RedEyeRemoval()
     }
 
     cv::CascadeClassifier eyes_cascade;
-    std::string eye_cascade_name = "haarcascade_eye_tree_eyeglasses.xml";
+    //std::string eye_cascade_name = "haarcascade_eye_tree_eyeglasses.xml";
+    std::string eye_cascade_name = "haarcascade_eye.xml"; // this looks to be better than tree eyeglasses.
     if(!eyes_cascade.load(eye_cascade_name))
     {
         QMessageBox::warning(this, tr("Eye detection"), tr("Failed to data file. "));
@@ -299,22 +306,47 @@ void MainWindow::RedEyeRemoval()
         eyes_cascade.detectMultiScale(faceROI, eyes, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, cv::Size(30, 30));
         for(int j=0; j < eyes.size(); j++)
         {
-            //-- Pick the color from neighbouring pixel and fill to remove red eye.
-            //-- Search for red pixels and make them black.
-            //-- For now lets define red as R 150 to 200 then G,B 100 or below
-            //-- if more than 200 then don't care about other pixel values.
-            if(image.channels() == 1)
-            {
-                QMessageBox::warning(this, tr("Can't remove red eye"), tr("Can't remove the red eye from single channel image"));
-                return;
-            }
+            //-- Search for red pixels and fix red eye.
 
             cv::Rect eyeRect;
             eyeRect.height = eyes[j].height;
             eyeRect.width = eyes[j].width;
             eyeRect.x = eyes[j].x + faces[i].x;
             eyeRect.y = eyes[j].y + faces[i].y;
+
             cv::Mat eyeRoI = image(eyeRect);
+
+            cv::Mat grayEyeROI = gray_image(eyeRect);
+            std::vector<cv::Vec3f> circles;
+
+            //-- From this eyeROI find the circular region, then remove red pixels.
+            /*HoughCircles(grayEyeROI, circles, CV_HOUGH_GRADIENT, 1, grayEyeROI.rows/8, 200, 100);
+            for(size_t p = 0; p < circles.size(); p++)
+            {
+                // center is circles[p][0] crcles[p][1]
+                // radius is circles[p][2]
+                cv::Rect fromCircle;
+                fromCircle.x = circles[p][0] - (float)(circles[p][2]/2);
+                fromCircle.y = circles[p][1] - (float)(circles[p][2]/2);
+                fromCircle.height = fromCircle.width = circles[p][2];
+                cv::Mat pupilROI = image(fromCircle);
+                int channels = pupilROI.channels();
+                int r = 2, b = 0, g = 1;
+                uchar* data = pupilROI.data;
+                int step = pupilROI.step;
+                for(int i=0; i<pupilROI.rows; i++)
+                {
+                    for(int j=0; j < pupilROI.cols; j++)
+                    {
+                        float redIntensity = (float)data[i*step+j*channels+r]/ ((data[i*step+j*channels+g] + data[i*step+j*channels+b])/ 2);
+                        if(redIntensity > 1.5)
+                        {
+                            data[i*step+j*channels+r] = (data[i*step+j*channels+g] + data[i*step+j*channels+b] ) /2;
+                        }
+                    }
+                }
+            }*/
+
             //-- In this matrix search for red pixels.
             int channels = eyeRoI.channels();
             int r = 2; // data is stored as BGR, so 2 for red.
@@ -325,16 +357,11 @@ void MainWindow::RedEyeRemoval()
             {
                 for(int j=0; j < eyeRoI.cols; j++)
                 {
-                    //data[i*step+j*channels+r] = value;
-                    if(data[i*step+j*channels+r] < 100) //||
-                            //(data[i*step+j*channels+r] > 150 && data[i*step+j*channels+g] < 100 && data[i*step+j*channels+b] < 100))
+                    float redIntensity = (float)data[i*step+j*channels+r]/ ((data[i*step+j*channels+g] + data[i*step+j*channels+b])/ 2);
+                    if(redIntensity > 1.5)
                     {
-                        // blacken this pixel.
-                        data[i*step+j*channels+r] = 0;
-                        data[i*step+j*channels+g] = 0;
-                        data[i*step+j*channels+b] = 0;
+                        data[i*step+j*channels+r] = (data[i*step+j*channels+g] + data[i*step+j*channels+b] ) /2;
                     }
-
                 }
             }
         }
